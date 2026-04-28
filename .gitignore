@@ -1,0 +1,71 @@
+# =============================================================================
+# GAME 415 — Sumo Knockoff
+# .gitignore for Unreal Engine 5.x projects
+# =============================================================================
+
+# -- Engine-generated folders (regenerated locally; never commit) -------------
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# -- IDE / OS noise -----------------------------------------------------------
+.vs/
+.idea/
+.vscode/
+.claude/
+*.suo
+*.user
+*.userprefs
+*.opendb
+*.opensdf
+*.sdf
+*.sln
+*.VC.db
+*.VC.opendb
+*.xcodeproj
+*.xcworkspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -- Visual Studio C++ / Rider --------------------------------------------------
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.idb
+*.ipdb
+*.iobj
+
+# -- Unreal-generated project files (regenerated from .uproject) -------------
+# (The .uproject itself IS committed; the generated solution is not.)
+*.sln
+Makefile
+CMakeLists.txt
+.vsconfig
+
+# -- Plugin binaries / intermediates (per-plugin) ----------------------------
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+Plugins/*/DerivedDataCache/
+
+# -- Local-only logs and crash reports ---------------------------------------
+*.log
+*.dmp
+
+# -- Local config overrides (per-machine; should NOT be shared) --------------
+# Leave Config/ committed, but ignore any explicitly local files
+Config/*Local*.ini
+
+# -- Packaged builds (use GitHub Releases or USB distribution instead) -------
+[Bb]uilds/
+PackagedBuilds/
+*.zip
+*.7z
+
+# =============================================================================
+# What IS committed:
+#   .uproject, Source/, Content/, Config/, Plugins/ (your own plugins),
+#   .gitattributes, .gitignore, README.md, any docs/
+# =============================================================================

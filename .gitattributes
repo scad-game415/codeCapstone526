@@ -1,0 +1,55 @@
+# =============================================================================
+# GAME 415 — Sumo Knockoff
+# .gitattributes — Git LFS tracking for Unreal binary assets
+# =============================================================================
+# Any extension listed here is routed to LFS. The "lockable" attribute lets
+# a teammate run `git lfs lock <file>` on a binary asset to prevent others
+# from editing it concurrently — this is the industry-standard workflow for
+# .uasset and .umap files where merges are not safe.
+
+# -- Unreal native binary assets (LOCKABLE) ---------------------------------
+*.uasset filter=lfs diff=lfs merge=lfs -text lockable
+*.umap   filter=lfs diff=lfs merge=lfs -text lockable
+
+# -- Source assets (textures, models, audio, video) -------------------------
+*.fbx    filter=lfs diff=lfs merge=lfs -text
+*.obj    filter=lfs diff=lfs merge=lfs -text
+*.psd    filter=lfs diff=lfs merge=lfs -text
+*.tga    filter=lfs diff=lfs merge=lfs -text
+*.png    filter=lfs diff=lfs merge=lfs -text
+*.jpg    filter=lfs diff=lfs merge=lfs -text
+*.jpeg   filter=lfs diff=lfs merge=lfs -text
+*.exr    filter=lfs diff=lfs merge=lfs -text
+*.hdr    filter=lfs diff=lfs merge=lfs -text
+*.tif    filter=lfs diff=lfs merge=lfs -text
+*.tiff   filter=lfs diff=lfs merge=lfs -text
+
+# -- Audio ------------------------------------------------------------------
+*.wav    filter=lfs diff=lfs merge=lfs -text
+*.mp3    filter=lfs diff=lfs merge=lfs -text
+*.ogg    filter=lfs diff=lfs merge=lfs -text
+*.flac   filter=lfs diff=lfs merge=lfs -text
+
+# -- Video / cinematics ------------------------------------------------------
+*.mp4    filter=lfs diff=lfs merge=lfs -text
+*.mov    filter=lfs diff=lfs merge=lfs -text
+*.avi    filter=lfs diff=lfs merge=lfs -text
+
+# -- Misc binary blobs -------------------------------------------------------
+*.bin    filter=lfs diff=lfs merge=lfs -text
+*.zip    filter=lfs diff=lfs merge=lfs -text
+*.7z     filter=lfs diff=lfs merge=lfs -text
+*.dll    filter=lfs diff=lfs merge=lfs -text
+*.so     filter=lfs diff=lfs merge=lfs -text
+*.dylib  filter=lfs diff=lfs merge=lfs -text
+*.lib    filter=lfs diff=lfs merge=lfs -text
+
+# -- Force these to be treated as text (line-ending normalization) ----------
+*.cpp    text eol=lf
+*.h      text eol=lf
+*.cs     text eol=lf
+*.ini    text eol=lf
+*.md     text eol=lf
+*.json   text eol=lf
+*.uproject text eol=lf
+*.uplugin  text eol=lf
