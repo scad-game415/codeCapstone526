@@ -42,6 +42,26 @@ Double-click `Sumo.uproject`. The project is bound to launcher UE 5.7, so it sho
 
 ---
 
+## Source Control Setup
+
+### In the Unreal Editor
+
+1. **Edit → Editor Preferences → Source Control**
+2. Set **Provider** to **Git (beta version)**
+3. Point **Git Binary Path** to your `git.exe` (e.g. `C:\Program Files\Git\bin\git.exe`)
+4. Click **Accept Settings** — the bottom-left of the editor should now show a green source control icon
+
+### In Visual Studio
+
+1. Open the `.sln` (generate it from the `.uproject` right-click menu if needed)
+2. **Git → Settings → Source Control → Current Source Control Plug-in** should say **Git**
+3. **View → Git Changes** to see your working tree, stage, and commit from within VS
+4. Use **Git → Manage Branches** to create feature branches and switch between them
+
+> **Note:** Do NOT build from VS with the editor open — it causes `SetEnv` MSBuild errors. Close the editor first, or build from the terminal with the UBT batch file.
+
+---
+
 ## Working in the Repo
 
 ### Branch policy
@@ -94,6 +114,22 @@ git push -u origin feature/yourname-thing
 | `Saved/`      | Local saves, logs, screenshots                          | **No**   |
 
 The "No" folders regenerate locally — they're machine-specific and would create constant merge conflicts.
+
+---
+
+## Demo Code: SumoPickup
+
+`Source/Sumo/Public/SumoPickup.h` · `Source/Sumo/Private/SumoPickup.cpp`
+
+A simple single-player pickup actor used as the first in-class C++ example. It does **not** replicate — this is just the basics. Covers:
+
+- **Components** — `UStaticMeshComponent` (visible mesh) + `USphereComponent` (overlap trigger)
+- **UPROPERTY** — editor-tweakable values: `RotationSpeed`, `BobAmplitude`, `BobSpeed`, `PickupSound`
+- **Tick** — spins and bobs the pickup using a sine wave
+- **Overlap events** — `OnComponentBeginOverlap` delegate binding, pawn filtering
+- **BlueprintImplementableEvent** — `OnPickedUp()` lets BP subclasses add effects, scoring, etc.
+
+Students: create your own pickup by making a **Blueprint subclass** of `SumoPickup`, assigning a mesh and sound, and implementing the `OnPickedUp` event in the event graph.
 
 ---
 
