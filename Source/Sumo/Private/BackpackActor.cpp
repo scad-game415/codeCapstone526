@@ -18,6 +18,8 @@ ABackpackActor::ABackpackActor()
 
 	InteractionVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionVolume"));
 	InteractionVolume->SetupAttachment(RootComponent);
+
+	BackpackMesh->SetSimulatePhysics(true);
 }
 
 // Called when the game starts or when spawned
@@ -25,7 +27,12 @@ void ABackpackActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority())
+	{
+		Inventory.SetNum(InventorySize);
+	}
 }
+
 
 // Called every frame
 void ABackpackActor::Tick(float DeltaTime)
@@ -107,6 +114,7 @@ void ABackpackActor::DropBackpack()
 
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	GetWorldTimerManager().SetTimer(SettledTimerHandle, this, &ABackpackActor::CheckIfSettled, 0.5f, true, 2.0f);
 }
 
 void ABackpackActor::Multicast_OnDropped_Implementation(ACharacter* Character)
@@ -131,6 +139,20 @@ void ABackpackActor::Multicast_OnDropped_Implementation(ACharacter* Character)
 	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
+void ABackpackActor::CheckIfSettled()
+{
+	if (!HasAuthority() || !BackpackMesh) return;
+
+	if (BackpackMesh->GetPhysicsLinearVelocity().Size() < 10.0f)
+	{
+		FRotator CurrentRot = GetActorRotation();
+		SetActorRotation(FRotator(0.0f, CurrentRot.Yaw, 0.0f));
+
+		GetWorldTimerManager().ClearTimer(SettledTimerHandle);
+		BackpackMesh->SetSimulatePhysics(false);
+	}
+}
+
 void ABackpackActor::BackpackPlayerInteraction(ACharacter* InteractingPlayer) 
 {
 	if (!HasAuthority()) return;
@@ -145,6 +167,19 @@ void ABackpackActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(ABackpackActor, Inventory);
 }
+
+void ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
+{
+	if (!HasAuthority() || !Inventory.IsValidIndex(SlotIndex)) return false;
+
+	if (Inventory[SlotIndex].ItemID.IsNone())
+	{
+		Inventory[SlotIndex] = Item;
+		return true;
+	}
+	return false;
+}
+
 
 void ABackpackActor::OnRep_Inventory()
 {
