@@ -2,6 +2,7 @@
 
 
 #include "BackpackActor.h"
+#include "SumoPlayerController.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -18,6 +19,8 @@ ABackpackActor::ABackpackActor()
 
 	InteractionVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionVolume"));
 	InteractionVolume->SetupAttachment(RootComponent);
+
+	BackpackMesh->SetSimulatePhysics(true);
 }
 
 // Called when the game starts or when spawned
@@ -25,7 +28,12 @@ void ABackpackActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority())
+	{
+		Inventory.SetNum(InventorySize);
+	}
 }
+
 
 // Called every frame
 void ABackpackActor::Tick(float DeltaTime)
@@ -107,6 +115,7 @@ void ABackpackActor::DropBackpack()
 
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	GetWorldTimerManager().SetTimer(SettledTimerHandle, this, &ABackpackActor::CheckIfSettled, 0.5f, true, 2.0f);
 }
 
 void ABackpackActor::Multicast_OnDropped_Implementation(ACharacter* Character)
@@ -131,12 +140,30 @@ void ABackpackActor::Multicast_OnDropped_Implementation(ACharacter* Character)
 	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
+void ABackpackActor::CheckIfSettled()
+{
+	if (!HasAuthority() || !BackpackMesh) return;
+
+	if (BackpackMesh->GetPhysicsLinearVelocity().Size() < 10.0f)
+	{
+		FRotator CurrentRot = GetActorRotation();
+		SetActorRotation(FRotator(0.0f, CurrentRot.Yaw, 0.0f));
+
+		GetWorldTimerManager().ClearTimer(SettledTimerHandle);
+		BackpackMesh->SetSimulatePhysics(false);
+	}
+}
+
 void ABackpackActor::BackpackPlayerInteraction(ACharacter* InteractingPlayer) 
 {
 	if (!HasAuthority()) return;
 
 	//inventory logic
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Someone is touching the backpack!"));
+	ASumoPlayerController* PC = Cast<ASumoPlayerController>(InteractingPlayer->GetController());
+	if (PC)
+	{
+		PC->Client_OpenBackpack(this);
+	}
 }
 
 void ABackpackActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -144,6 +171,43 @@ void ABackpackActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABackpackActor, Inventory);
+}
+
+bool ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
+{
+	if (!HasAuthority() || !Inventory.IsValidIndex(SlotIndex)) return false;
+
+	if (Inventory[SlotIndex].ItemClass == nullptr)
+	{
+		Inventory[SlotIndex] = Item;
+		return true;
+	}
+	return false;
+}
+
+FBackpackItem ABackpackActor::GetItemInSlot(int SlotIndex)
+{
+	if (Inventory.IsValidIndex(SlotIndex))
+	{
+		return Inventory[SlotIndex];
+	}
+	return FBackpackItem();
+}
+
+void ABackpackActor::SetItemInSlot(int SlotIndex, FBackpackItem NewItem)
+{
+	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
+	{
+		Inventory[SlotIndex] = NewItem;
+	}
+}
+
+void ABackpackActor::ClearSlot(int SlotIndex)
+{
+	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
+	{
+		Inventory[SlotIndex] = FBackpackItem();
+	}
 }
 
 void ABackpackActor::OnRep_Inventory()
