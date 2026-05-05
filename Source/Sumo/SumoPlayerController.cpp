@@ -2,6 +2,7 @@
 
 
 #include "SumoPlayerController.h"
+#include "BackpackActor.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "InputMappingContext.h"
@@ -58,4 +59,10 @@ void ASumoPlayerController::SetupInputComponent()
 			}
 		}
 	}
+}
+
+void ASumoPlayerController::Client_OpenBackpack_Implementation(ABackpackActor* BackpackRef)
+{
+	BP_OpenBackpack(BackpackRef);
+	//so that the compiler doesn't complain! all the logic is located in the BP -N
 }

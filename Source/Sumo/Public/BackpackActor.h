@@ -18,16 +18,10 @@ struct FBackpackItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ItemName;
+    TSubclassOf<AActor> ItemClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UTexture2D* Icon;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AActor> ItemClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Weight;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int Quantity;
 };
 
 UCLASS()
@@ -57,6 +51,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Backpack")
 	void BackpackPlayerInteraction(ACharacter* InteractingPlayer);
 
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	bool AddItemToSlot(int SlotIndex, FBackpackItem Item);
+
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+    FBackpackItem GetItemInSlot(int32 SlotIndex);
+
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+    void SetItemInSlot(int SlotIndex, FBackpackItem NewItem);
+
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+    void ClearSlot(int SlotIndex);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -67,14 +73,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UBoxComponent* InteractionVolume;
 
-	UPROPERTY(ReplicatedUsing = OnRep_Inventory)
-	TArray<FBackpackItem>Inventory; //this should be the struct for items we end up using
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool HintVisible = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool CanPressE = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Inventory, EditAnywhere, Category = "Inventory")
+	TArray<FBackpackItem>Inventory; //this should be the struct for items we end up using
+	//later n note - i made my own, should be able to transfer between easier, self reminder to optimize later
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int InventorySize = 27;
 
 	UFUNCTION()
 	void OnRep_Inventory();
@@ -95,6 +105,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Backpack|Positioning")
 	FRotator socketRotation;
+
+	void CheckIfSettled();
+
+	FTimerHandle SettledTimerHandle;
 
 public:	
 	// Called every frame
