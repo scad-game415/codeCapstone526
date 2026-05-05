@@ -18,7 +18,7 @@ struct FBackpackItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FName ItemID;
+    TSubclassOf<AActor> ItemClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int Quantity;
@@ -53,6 +53,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	bool AddItemToSlot(int SlotIndex, FBackpackItem Item);
+
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+    FBackpackItem GetItemInSlot(int32 SlotIndex);
+
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+    void SetItemInSlot(int SlotIndex, FBackpackItem NewItem);
+
+    UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
+    void ClearSlot(int SlotIndex);
 
 protected:
 	// Called when the game starts or when spawned

@@ -177,12 +177,37 @@ bool ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
 {
 	if (!HasAuthority() || !Inventory.IsValidIndex(SlotIndex)) return false;
 
-	if (Inventory[SlotIndex].ItemID.IsNone())
+	if (Inventory[SlotIndex].ItemClass == nullptr)
 	{
 		Inventory[SlotIndex] = Item;
 		return true;
 	}
 	return false;
+}
+
+FBackpackItem ABackpackActor::GetItemInSlot(int SlotIndex)
+{
+	if (Inventory.IsValidIndex(SlotIndex))
+	{
+		return Inventory[SlotIndex];
+	}
+	return FBackpackItem();
+}
+
+void ABackpackActor::SetItemInSlot(int SlotIndex, FBackpackItem NewItem)
+{
+	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
+	{
+		Inventory[SlotIndex] = NewItem;
+	}
+}
+
+void ABackpackActor::ClearSlot(int SlotIndex)
+{
+	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
+	{
+		Inventory[SlotIndex] = FBackpackItem();
+	}
 }
 
 void ABackpackActor::OnRep_Inventory()
