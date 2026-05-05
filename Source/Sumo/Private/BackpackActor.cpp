@@ -2,6 +2,7 @@
 
 
 #include "BackpackActor.h"
+#include "SumoPlayerController.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -158,7 +159,11 @@ void ABackpackActor::BackpackPlayerInteraction(ACharacter* InteractingPlayer)
 	if (!HasAuthority()) return;
 
 	//inventory logic
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Someone is touching the backpack!"));
+	ASumoPlayerController* PC = Cast<ASumoPlayerController>(InteractingPlayer->GetController());
+	if (PC)
+	{
+		PC->Client_OpenBackpack(this);
+	}
 }
 
 void ABackpackActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -168,7 +173,7 @@ void ABackpackActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABackpackActor, Inventory);
 }
 
-void ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
+bool ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
 {
 	if (!HasAuthority() || !Inventory.IsValidIndex(SlotIndex)) return false;
 
@@ -179,7 +184,6 @@ void ABackpackActor::AddItemToSlot(int SlotIndex, FBackpackItem Item)
 	}
 	return false;
 }
-
 
 void ABackpackActor::OnRep_Inventory()
 {

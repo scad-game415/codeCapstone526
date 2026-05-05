@@ -52,7 +52,7 @@ public:
 	void BackpackPlayerInteraction(ACharacter* InteractingPlayer);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
-	void AddItemToSlot(int SlotIndex, FBackpackItem Item)
+	bool AddItemToSlot(int SlotIndex, FBackpackItem Item);
 
 protected:
 	// Called when the game starts or when spawned
