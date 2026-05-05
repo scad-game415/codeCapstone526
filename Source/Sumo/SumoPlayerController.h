@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BackpackActor.h"
 #include "GameFramework/PlayerController.h"
 #include "SumoPlayerController.generated.h"
 
@@ -17,7 +18,14 @@ UCLASS(abstract)
 class ASumoPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	UFUNCTION(Client, Reliable)
+	void Client_OpenBackpack(ABackpackActor* BackpackRef);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory")
+	void BP_OpenBackpack(ABackpackActor* BackpackRef);
+
+
 protected:
 
 	/** Input Mapping Contexts */
