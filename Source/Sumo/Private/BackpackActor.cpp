@@ -199,6 +199,11 @@ void ABackpackActor::SetItemInSlot(int SlotIndex, FBackpackItem NewItem)
 	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
 	{
 		Inventory[SlotIndex] = NewItem;
+
+		if (GetNetMode() != NM_DedicatedServer) //this is only needed for listen server so i have no idea if its necessary
+		{
+			OnRep_Inventory();
+		}
 	}
 }
 
@@ -207,10 +212,11 @@ void ABackpackActor::ClearSlot(int SlotIndex)
 	if (HasAuthority() && Inventory.IsValidIndex(SlotIndex))
 	{
 		Inventory[SlotIndex] = FBackpackItem();
+
+		if (GetNetMode() != NM_DedicatedServer) //but better safe than sorry i guess
+		{
+			OnRep_Inventory();
+		}
 	}
 }
 
-void ABackpackActor::OnRep_Inventory()
-{
-
-}
