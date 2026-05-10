@@ -89,7 +89,7 @@ protected:
 	//later n note - i made my own, should be able to transfer between easier, self reminder to optimize later
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	int InventorySize = 27;
+	int InventorySize = 9;
 
 	UFUNCTION()
 	void OnRep_Inventory() { OnInventoryUpdated.Broadcast(); };
