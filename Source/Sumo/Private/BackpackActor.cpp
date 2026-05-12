@@ -51,8 +51,8 @@ void ABackpackActor::EquipBackpack(ACharacter* NewOwner)
 	OriginalScale = NewOwner->GetActorScale3D();
 	NewOwner->SetActorScale3D(EncumberedScale);
 
-	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
 	AttachToComponent(NewOwner->GetMesh(), AttachmentRules, FName("SpineSocket"));
@@ -85,8 +85,8 @@ void ABackpackActor::Multicast_OnEquipped_Implementation(ACharacter* NewOwner)
 	}
 
 	BackpackMesh->SetSimulatePhysics(false);
-	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
 	AttachToComponent(NewOwner->GetMesh(), AttachRules, FName("SpineSocket"));
