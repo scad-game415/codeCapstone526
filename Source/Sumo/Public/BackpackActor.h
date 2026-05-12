@@ -18,11 +18,13 @@ struct FBackpackItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<AActor> ItemClass;
+    TSubclassOf<AActor> ItemClass = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int Quantity;
+    int Quantity = 0;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
 
 UCLASS()
 class SUMO_API ABackpackActor : public AActor
@@ -32,6 +34,9 @@ class SUMO_API ABackpackActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABackpackActor();
+
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+    FOnInventoryUpdated OnInventoryUpdated;
 
 	UFUNCTION(NetMulticast, Reliable)
     void Multicast_OnEquipped(ACharacter* NewOwner);
@@ -84,10 +89,10 @@ protected:
 	//later n note - i made my own, should be able to transfer between easier, self reminder to optimize later
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	int InventorySize = 27;
+	int InventorySize = 9;
 
 	UFUNCTION()
-	void OnRep_Inventory();
+	void OnRep_Inventory() { OnInventoryUpdated.Broadcast(); };
 	
 	UPROPERTY(EditDefaultsOnly, Category="Backpack|Defaults")
 	float OriginalWalkSpeed = 600;
