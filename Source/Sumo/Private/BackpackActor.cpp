@@ -47,6 +47,7 @@ void ABackpackActor::EquipBackpack(ACharacter* NewOwner)
 	if (!HasAuthority() || !NewOwner) return;
 
 	BackpackMesh->SetSimulatePhysics(false);
+	SetReplicateMovement(false);
 
 	OriginalScale = NewOwner->GetActorScale3D();
 	NewOwner->SetActorScale3D(EncumberedScale);
@@ -85,6 +86,7 @@ void ABackpackActor::Multicast_OnEquipped_Implementation(ACharacter* NewOwner)
 	}
 
 	BackpackMesh->SetSimulatePhysics(false);
+	SetReplicateMovement(false);
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	InteractionVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
@@ -102,9 +104,11 @@ void ABackpackActor::DropBackpack()
 	{
 		MovementComp->MaxWalkSpeed = OriginalWalkSpeed;
 	}
+	SetReplicateMovement(true);
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetOwner(nullptr);
+
 
 	CurrentOwnerChar->SetActorScale3D(OriginalScale);
 
@@ -128,6 +132,7 @@ void ABackpackActor::Multicast_OnDropped_Implementation(ACharacter* Character)
 	{
 		MovementComp->MaxWalkSpeed = 600; //trying to find a way to make this work a little better but for now manually setting
 	}
+	SetReplicateMovement(true);
 
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 
